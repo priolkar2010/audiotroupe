@@ -1,0 +1,228 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Dashboard | Audio Troupe</title>
+    <% include partials/head %>
+</head>
+<script>
+    (function ( i, s, o, g, r, a, m )
+    {
+        i[ 'GoogleAnalyticsObject' ] = r;
+        i[ r ] = i[ r ] || function ()
+                {
+                    (i[ r ].q = i[ r ].q || []).push( arguments )
+                }, i[ r ].l = 1 * new Date();
+        a = s.createElement( o ),
+                m = s.getElementsByTagName( o )[ 0 ];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore( a, m )
+    })( window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga' );
+
+    ga( 'create', 'UA-63070565-1', 'auto' );
+    ga( 'send', 'pageview' );
+
+    $( document ).ready( function ()
+    {
+        $.ajax( {
+            url: "getAllModels",
+            method: "POST",
+            data: "models=" + $( "#models" ).text().trim()
+        } ).done( function ( result )
+        {
+            drawTable( result );
+        } );
+
+        $.ajax( {
+            url: "getOrdersCount",
+            method: "GET"
+        } ).done( function ( result )
+        {
+            $( "#newOrders" ).append( result.totalOrders );
+        } );
+    } );
+
+    function drawTable( data )
+    {
+        for ( var i = 0; i < data.length; i++ )
+        {
+            drawRow( data[ i ] );
+        }
+    }
+
+    function drawRow( rowData )
+    {
+
+
+        $( '#recommendations' ).append(
+                "<div class='card container'><div class='card-image waves-effect waves-block waves-light container'><br><br><img style='max-height:400px; max-width:400px;' class='activator' src=https://storage.googleapis.com/audiotroupe/" + rowData.imageName + "></div>" +
+                "<div class='card-content'><span class='card-title activator grey-text text-darken-4'>" + rowData.model + "  -  " + rowData.make + "<i class='material-icons right'>more_vert</i></span>" +
+                "<p><a class='activator'>More Info</a></p><br><input type='checkbox' name='headphonemodels' class='headphonemodels' id='"+ rowData.model +"'><label for='"+ rowData.model +"'>I want this</label></div>" +
+                "<div class='card-reveal'><span class='card-title grey-text text-darken-4'>" + rowData.model + "  -  " + rowData.make + "<i class='material-icons right'>close</i></span>" +
+                "<br><br><p class='container'>" + rowData.description + "</p></div></div><div></div>"
+        );
+
+
+        // <li class='thumbnail'>" + "<img src=https://storage.googleapis.com/audiotroupe/" + rowData.imageName + "><div class='caption'><strong>" + rowData.model + "-" + rowData.make + "</strong><br><h6>" + rowData.msrp +
+        //     "</h6><button type='button' class='selection' style='font-size:15px;' data-toggle='modal' data-target=#" + rowData.model + ">More Info</button><div id=" + rowData.model +
+        //     " class='modal fade' role='dialog'><div class='modal-dialog'><div class='modal-content'><div class='modal-header'><button type='button' class='close' data-dismiss='modal'>&times;</button><h4 class='modal-title'>" + rowData.model +
+        //     " - " +
+        //     rowData.make + "</h4></div><div class='modal-body'><img class='customer-thumbnail' src=https://storage.googleapis.com/audiotroupe/" + rowData.imageName + "><p><strong>Price: </strong>" + rowData.msrp +
+        //     "</p><p><strong>Description: </strong>" +
+        //     rowData.description +
+        //     "</p></div><div class='modal-footer'><button type='button' class='btn btn-default' data-dismiss='modal'>Close</button></div></div></div></div><br><paper-checkbox name='headphonemodels' class='headphonemodels' id='" +
+        //     rowData.model + "'></paper-checkbox></div></li>");
+    }
+
+    function submitForm()
+    {
+        var headsetModels = document.getElementsByClassName( "headphonemodels" );
+        var form = document.createElement( "form" );
+        form.method = "post";
+        form.action = "/checkout";
+        var headsetModelsData = [];
+        var selectedHeadsets = 0;
+        for ( var i = headsetModels.length - 1; i >= 0; i-- )
+        {
+            if ( headsetModels[ i ].checked )
+            {
+                selectedHeadsets = selectedHeadsets + 1
+                headsetModelsData.push( headsetModels[ i ].id );
+            }
+        }
+        if ( selectedHeadsets > 3 )
+        {
+            $( "#errors" ).attr( 'class', 'alert-box alert radius' );
+            $( "#errors" ).attr( 'style', 'width:300px; margin-left:37%; margin-right:23%;' );
+            $( "#errors" ).text( "Please select a maximum of 3 headphones" );
+        }
+        else
+        {
+            var headsetModelsField = document.createElement( "input" );
+            headsetModelsField.setAttribute( "value", "hidden" );
+            headsetModelsField.setAttribute( "name", "headsetModels" );
+            headsetModelsField.setAttribute( "value", headsetModelsData );
+
+            var recommendationIdField = document.createElement( "input" );
+            recommendationIdField.setAttribute( "value", "hidden" );
+            recommendationIdField.setAttribute( "name", "recommendationId" );
+            recommendationIdField.setAttribute( "value", $( "#recommendationId" ).text() );
+
+            form.appendChild( recommendationIdField );
+            form.appendChild( headsetModelsField );
+
+            document.body.appendChild( form );
+            form.submit();
+            document.body.removeChild( form );
+        }
+    }
+</script>
+
+<body>
+<!-- Google Tag Manager -->
+<noscript>
+    <iframe src="//www.googletagmanager.com/ns.html?id=GTM-T9W4KW" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+</noscript>
+<script>
+    (function ( w, d, s, l, i )
+    {
+        w[ l ] = w[ l ] || [];
+        w[ l ].push( {
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        } );
+        var f = d.getElementsByTagName( s )[ 0 ],
+                j = d.createElement( s ),
+                dl = l!='dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+                '//www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore( j, f );
+    })( window, document, 'script', 'dataLayer', 'GTM-T9W4KW' );
+    // Initialize collapse button
+    $( ".button-collapse" ).sideNav();
+</script>
+<!-- End Google Tag Manager -->
+<header>
+    <nav class="top-nav  blue darken-2">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a class="brand-logo center">Your Dashboard</a>
+                <div>
+                    <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only"><i
+                                class="material-icons" id="menu">menu</i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <% include partials/sidebar %>
+</header>
+<!-- <% include partials/sidebar %> -->
+<main>
+    <div id="recommendationId" style="display:none;">
+        <%= recommendationId %>
+    </div>
+    <div id="models" style="display:none;">
+        <%= model_list %>
+    </div>
+    <div class="container">
+        <div class="row container">
+            <div class="col s12 m9 l10">
+                <br>
+                <div id="errors"></div>
+                <% if(user.recommendation.length===0) { %>
+                <div class="card-panel grey lighten-5">
+                    <div class="basicTile" style="text-align:center;">
+                        <br>
+                        <img style="max-width:15%; opacity:.6;" src="public/images/1-register.png"></img>
+                        <img style="max-width:18%;" src="public/images/2-curation.png"></img>
+                        <img style="max-width:16%; opacity:.6; margin-right:2%;"
+                             src="public/images/3-shipping.png"></img>
+                        <img style="max-width:14%; opacity:.6; margin-bottom:1%;" src="public/images/4-try.png"></img>
+                        <br> Current Step: Curation
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="card-panel grey lighten-5">
+                    <div class="basicTile" style="text-align:center;">
+                        <br> Time to Relax
+                        <br>
+                        <img style="max-width:150px;" src="public/images/AT-Relax.png"></img>
+                        <p> We'll get back to you shortly via email :) </p>
+                        <br>
+                        <p class="subheader" style="font-size:14px;"> While we are working on your recommendations, feel
+                            free to access some more information:
+                            <br>
+                            <a href="http://audiotroupe.com/in-ear-headphones/">In-Ear Headphones</a> | <a
+                                    href="http://audiotroupe.com/on-ear-headphones/">On-Ear Headphones</a> | <a
+                                    href="http://audiotroupe.com/over-the-ear-headphones/">Over-the-Ear Headphones</a>
+                            <br>
+                            <br> - <a href="http://audiotroupe.com/experiences">Our Blog</a> -</p>
+                    </div>
+                </div>
+                <% } %>
+
+                <div align="center">
+                    <h5>
+                      Here are your selections:
+                    </h5><br>
+                    <ul class="row container" id="recommendations">
+                    </ul>
+                    <br>
+
+                    <% if(model_list.length!=0) { %>
+                    <button type="sumbit" class="waves-effect waves-light btn blue" onclick="submitForm()">Order
+                    </button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</main>
+<div id="sidenav-overlay" style='opacity: 1;'></div>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Register | Audio Troupe</title>
+    <% include partials/head %>
+    <script value="text/javascript">
+        //analytics code
+        (function ( i, s, o, g, r, a, m )
+        {
+            i[ 'GoogleAnalyticsObject' ] = r;
+            i[ r ] = i[ r ] || function ()
+                    {
+                        (i[ r ].q = i[ r ].q || []).push( arguments )
+                    }, i[ r ].l = 1 * new Date();
+            a = s.createElement( o ),
+                    m = s.getElementsByTagName( o )[ 0 ];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore( a, m )
+        })( window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga' );
+
+        ga( 'create', 'UA-63070565-1', 'auto' );
+        ga( 'send', 'pageview' );
+
+        function submitForm()
+        {
+            var headsetData = [];
+            var activitiesData = [];
+            var pricePointsData = [];
+            var musicTypesData = [];
+
+            var headSets = document.getElementsByClassName( "headSets" );
+            for ( var i = headSets.length - 1; i >= 0; i-- )
+            {
+                if ( headSets[ i ].checked )
+                {
+                    headsetData.push( headSets[ i ].id );
+                }
+            }
+
+            var pricePoints = document.getElementsByClassName( "pricePoints" );
+            for ( var i = pricePoints.length - 1; i >= 0; i-- )
+            {
+                if ( pricePoints[ i ].checked )
+                {
+                    pricePointsData.push( pricePoints[ i ].id );
+                }
+            }
+            var activities = document.getElementsByClassName( "activities" );
+            for ( var i = activities.length - 1; i >= 0; i-- )
+            {
+                if ( activities[ i ].checked )
+                {
+                    activitiesData.push( activities[ i ].id );
+                }
+            }
+            var musicTypes = document.getElementsByClassName( "musicTypes" );
+            for ( var i = musicTypes.length - 1; i >= 0; i-- )
+            {
+                if ( musicTypes[ i ].checked )
+                {
+                    musicTypesData.push( musicTypes[ i ].id );
+                }
+            }
+
+            var phoneNumber = document.getElementsByClassName( "phoneNumber" )[ 0 ].value;
+            console.log( headsetData );
+            console.log( pricePointsData );
+            console.log( musicTypesData );
+
+            var form = document.createElement( "form" );
+            form.method = "post";
+            form.action = "/register";
+            var headSetHiddenField = document.createElement( "input" );
+            headSetHiddenField.setAttribute( "value", "hidden" );
+            headSetHiddenField.setAttribute( "name", "headsets" );
+            headSetHiddenField.setAttribute( "value", headsetData );
+
+            var pricePointHiddenField = document.createElement( "input" );
+            pricePointHiddenField.setAttribute( "value", "hidden" );
+            pricePointHiddenField.setAttribute( "name", "pricepoints" );
+            pricePointHiddenField.setAttribute( "value", pricePointsData );
+
+
+            var activityHiddenField = document.createElement( "input" );
+            activityHiddenField.setAttribute( "value", "hidden" );
+            activityHiddenField.setAttribute( "name", "activities" );
+            activityHiddenField.setAttribute( "value", activitiesData );
+
+
+            var musicHiddenField = document.createElement( "input" );
+            musicHiddenField.setAttribute( "value", "hidden" );
+            musicHiddenField.setAttribute( "name", "music" );
+            musicHiddenField.setAttribute( "value", musicTypesData );
+
+            var phoneHiddenField = document.createElement( "input" );
+            phoneHiddenField.setAttribute( "value", "hidden" );
+            phoneHiddenField.setAttribute( "name", "phoneNumber" );
+            phoneHiddenField.setAttribute( "value", phoneNumber );
+
+            form.appendChild( headSetHiddenField );
+            form.appendChild( musicHiddenField );
+            form.appendChild( activityHiddenField );
+            form.appendChild( pricePointHiddenField );
+            form.appendChild( phoneHiddenField );
+
+            document.body.appendChild( form );
+            form.submit();
+            document.body.removeChild( form );
+        }
+
+        $( document ).ready( function ()
+        {
+            $.ajax( {
+                url: "sendEmailForNewSignUp",
+                method: "GET"
+            } )
+        } );
+        $( document ).ready( function ()
+        {
+            $( "#tos" ).click( function ()
+            {
+                $( "#done" ).fadeToggle( 100 );
+
+            } )
+        } );
+    </script>
+</head>
+
+<body class="fullbleed">
+<!-- Google Tag Manager -->
+<noscript>
+    <iframe src="//www.googletagmanager.com/ns.html?id=GTM-T9W4KW" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+</noscript>
+<script>
+    (function ( w, d, s, l, i )
+    {
+        w[ l ] = w[ l ] || [];
+        w[ l ].push( {
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        } );
+        var f = d.getElementsByTagName( s )[ 0 ],
+                j = d.createElement( s ),
+                dl = l!='dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+                '//www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore( j, f );
+    })( window, document, 'script', 'dataLayer', 'GTM-T9W4KW' );
+</script>
+<!-- End Google Tag Manager -->
+<div class="container">
+    <h3 style="text-align:center;"> Just a few more questions, we promise!
+        <br>
+        <small class="subheader">This will help us get you the right kind of headphones</small>
+    </h3>
+        <div class="form">
+            <div class="card-panel grey lighten-5">
+                <div class="basicTile">
+                    <br>
+                    <p for="styleOfHeadphones">What kind of headphones do you prefer?</p>
+                    <% for(var i = 0; i < headsetstyles_list.length; i++) { %>
+                    <input type="checkbox" name="headsetStyle" class="headSets"
+                           id="<%= headsetstyles_list[ i ].value %>">
+                    <label for="<%= headsetstyles_list[ i ].value %>">
+                        <%= headsetstyles_list[ i ].value %>
+                    </label>
+                    </input>
+                    <br>
+                    <% } %>
+                    %>
+                    <br>
+                    <p for="priceRange">What is your price range? </p>
+                    <% for(var i = 0; i < pricepoints_list.length; i++) { %>
+                    <input type="checkbox" name="pricePoints" class="pricePoints"
+                           id="<%= pricepoints_list[ i ].value %>">
+                    <label for="<%= pricepoints_list[ i ].value %>">
+                        <%= pricepoints_list[ i ].value %>
+                    </label>
+                    </input>
+                    <br>
+                    <% } %>
+                    <br>
+                    <p for="usageContext">How will you use your headphones?
+                        <br>
+                        <small class="subheader">Knowing how you use your headphones is important to get you the right
+                            kind
+                        </small>
+                    </p>
+                    <% for(var i = 0; i < activities_list.length; i++) { %>
+                    <input type="checkbox" name="activities" class="activities"
+                           id="<%= activities_list[ i ].value %>">
+                    <label for="<%= activities_list[ i ].value %>">
+                        <%= activities_list[ i ].value %>
+                    </label>
+                    </input>
+                    <br>
+                    <% } %>
+
+                    <br>
+                    <p for="musicGenre">What kind of music do you prefer?
+                        <br>
+                        <small class="subheader">Different kinds of music have different bass, treble, and mid
+                            requirements
+                        </small>
+                    </p>
+                    <% for(var i = 0; i < musictypes_list.length; i++) { %>
+                    <input type="checkbox" name="musicTypes" class="musicTypes"
+                           id="<%= musictypes_list[ i ].value %>">
+                    <label for="<%= musictypes_list[ i ].value %>">
+                        <%= musictypes_list[ i ].value %>
+                    </label>
+                    </input>
+                    <br>
+                    <% } %>
+                    <br>
+                    <p>What is your cell phone number?
+                        <small class="subheader"> (Optional)</small>
+                    </p>
+                    <div class="input-field col s12">
+                        <input type="text" class="phoneNumber" id="phoneNumber"
+                               placeholder="Example: XXX-XXX-XXXX">
+                    </div>
+                </div>
+            </div>
+            <br>
+            <input type="checkbox" name="TOS" id="tos">
+            <label for="tos">I agree to the <a href="http://www.audiotroupe.com/tos">Terms of
+                    Service</a> and the <a href="http://www.auditroupe.com/privacy-policy">Privacy Policy</a> of
+                Audio
+                Troupe
+            </label></input>
+            <br>
+            <br>
+            <div style="align-items:center;">
+                <button type="submit" id="done" class="waves-effect waves-light btn blue" style="display:none;" onclick="submitForm()">Done!</button>            </div>
+            <br>
+        </div>
+</div>
+</body>
+
+</html>

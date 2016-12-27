@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+    <title>Contact Us | Audio Troupe</title>
+    <% include partials/head %>
+</head>
+<style>
+    .paper-input {
+        background-color: #eff6fb;
+    }
+
+    textarea[rows] {
+        height: 100%;
+    }
+</style>
+<script>
+    $( document ).ready( function ()
+    {
+        $.ajax( {
+            url: "getOrdersCount",
+            method: "GET"
+        } ).done( function ( result )
+        {
+            $( "#newOrders" ).append( result.totalOrders );
+        } );
+    } );
+</script>
+
+<body>
+<!-- Google Tag Manager -->
+<noscript>
+    <iframe src="//www.googletagmanager.com/ns.html?id=GTM-T9W4KW" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+</noscript>
+<script>
+    (function ( w, d, s, l, i )
+    {
+        w[ l ] = w[ l ] || [];
+        w[ l ].push( {
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        } );
+        var f = d.getElementsByTagName( s )[ 0 ],
+                j = d.createElement( s ),
+                dl = l!='dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+                '//www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore( j, f );
+    })( window, document, 'script', 'dataLayer', 'GTM-T9W4KW' );
+</script>
+<!-- End Google Tag Manager -->
+<header>
+    <nav class="top-nav blue darken-2">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a class="brand-logo center">Contact Us</a>
+                <div>
+                    <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only"><i
+                                class="material-icons">menu</i></a></div>
+            </div>
+        </div>
+        </div>
+    </nav>
+    <% include partials/sidebar %>
+</header>
+<main>
+    <div class="container" style="text-align:center;">
+        <h3 span>Let us know your thoughts :)</h3>
+        <p>To: Audio Troupe Support</p>
+        <div class="card-panel grey lighten-5">
+            <form method="post" action="/submitComments">
+                <input type="text" name="subject" class="validate" placeholder="Subject">
+                <textarea name="comment" class="materialize-textarea" rows="3" placeholder="Description"></textarea>
+                <br>
+                <button value="submit" type="submit" class="waves-effect waves-blue btn blue">Submit</button>
+            </form>
+        </div>
+
+    </div>
+
+
+</main>
+
+</body>
+
+</html>

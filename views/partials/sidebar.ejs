@@ -1,0 +1,48 @@
+<ul class="side-nav fixed" id="nav-mobile">
+    <li><img class="responsive-img" src="https://storage.googleapis.com/audiotroupe/AT-Logo.png"></img>
+    </li>
+    <li>
+        <div class="container">
+            <% if ( user.fb_id ) { %>
+            <img src="https://graph.facebook.com/<%= user.fb_id %>/picture?type=large">
+            <% } else { %>
+            <div class="userProfileImage"></div>
+            <% } %>
+        </div>
+    </li>
+    <li>
+        <h5 class="container" align="center">
+            <%= user.name %>
+        </h5>
+    </li>
+    <br>
+    <li class="bold">
+        <a href="/dashboard" class="waves-effect waves-blue">Dashboard</a>
+    </li>
+    <li class="bold">
+        <a href="/myorders" class="waves-effect waves-blue">My Orders</a>
+    </li>
+    <li class="bold">
+        <a href="/contactUs" class="waves-effect waves-blue">Contact Us</a>
+    </li>
+    <br>
+    <br>
+    <br>
+    <li class="blue lighten-1">
+        <a class="waves-effect waves-light white-text" href="/logout">Log Out</a>
+    </li>
+</ul>
+<a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+
+<script>
+
+    $( "#menu" ).click( function ()
+    {
+        $( "#nav-mobile" ).css( 'transform', 'translateX(0px)' );
+        $( "body" ).css( { "overflow": "hidden" } );
+        $( "body" ).css( { "width": "885px" } );
+        $( "#sidenav-overlay" ).css( 'display', 'block' );
+    } );
+
+
+</script>

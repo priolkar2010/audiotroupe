@@ -1,0 +1,50 @@
+
+ document = ({ "label" : "HT3", "value" : "In Ear"});
+ db.headsetstyles.insert(document);
+ document = ({ "label" : "HT2", "value" : "On Ear"});
+ db.headsetstyles.insert(document);
+ document = ({ "label" : "HT1", "value" : "Over the Ear"});
+ db.headsetstyles.insert(document);
+
+ document = ({ "label" : "PP4", "value" : "$50-$100"});
+ db.pricepoints.insert(document);
+ document = ({ "label" : "PP1", "value" : "$100-$150"});
+ db.pricepoints.insert(document);
+ document = ({ "label" : "PP2", "value" : "$150-$200"});
+ db.pricepoints.insert(document);
+ document = ({ "label" : "PP3", "value" : "$200-$250"});
+ db.pricepoints.insert(document);
+ document = ({ "label" : "PP4", "value" : "$250-$300"});
+ db.pricepoints.insert(document);
+
+ document = ({ "label" : "AT1", "value" : "Running"});
+ db.activitytypes.insert(document);
+ document = ({ "label" : "AT2", "value" : "Hiking"});
+ db.activitytypes.insert(document);
+ document = ({ "label" : "AT3", "value" : "Gym"});
+ db.activitytypes.insert(document);
+ document = ({ "label" : "AT4", "value" : "Reading/Leisure"});
+ db.activitytypes.insert(document);
+ document = ({ "label" : "AT5", "value" : "Work"});
+ db.activitytypes.insert(document);
+ document = ({ "label" : "AT6", "value" : "Commute"});
+ db.activitytypes.insert(document);
+
+ document = ({ "label" : "MT1", "value" : "Rock"});
+ db.musictypes.insert(document);
+ document = ({ "label" : "MT2", "value" : "Hip-Hop"});
+ db.musictypes.insert(document);
+ document = ({ "label" : "MT3", "value" : "RnB"});
+ db.musictypes.insert(document);
+ document = ({ "label" : "MT4", "value" : "Rap"});
+ db.musictypes.insert(document);
+ document = ({ "label" : "MT5", "value" : "Classical"});
+ db.musictypes.insert(document);
+ document = ({ "label" : "MT6", "value" : "Instrumental"});
+ db.musictypes.insert(document);
+ document = ({ "label" : "MT7", "value" : "Pop"});
+ db.musictypes.insert(document);
+ document = ({ "label" : "MT8", "value" : "Jazz"});
+ db.musictypes.insert(document);
+ document = ({ "label" : "MT9", "value" : "International"});
+ db.musictypes.insert(document);

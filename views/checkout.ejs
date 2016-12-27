@@ -1,0 +1,480 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Checkout | Audio Troupe</title>
+    <% include partials/head %>
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script src="xmlhttp.js" type="text/javascript"></script>
+</head>
+<style>
+    .inputStyle {
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        border-style: solid;
+        border-width: 1px;
+        border-color: #cccccc;
+    }
+</style>
+<script>
+    (function ( i, s, o, g, r, a, m )
+    {
+        i[ 'GoogleAnalyticsObject' ] = r;
+        i[ r ] = i[ r ] || function ()
+                {
+                    (i[ r ].q = i[ r ].q || []).push( arguments )
+                }, i[ r ].l = 1 * new Date();
+        a = s.createElement( o ),
+                m = s.getElementsByTagName( o )[ 0 ];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore( a, m )
+    })( window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga' );
+
+    ga( 'create', 'UA-63070565-1', 'auto' );
+    ga( 'send', 'pageview' );
+
+
+    Stripe.setPublishableKey( 'pk_live_VlrF0yRzyndkUUErwhN3gnCP' );
+
+    $( document ).ready( function ()
+    {
+        $.ajax( {
+            url: "getAllModels",
+            method: "POST",
+            data: "models=" + $( "#models" ).text().trim()
+        } ).done( function ( result )
+        {
+            drawTable( result );
+        } );
+        $.ajax( {
+            url: "getOrdersCount",
+            method: "GET"
+        } ).done( function ( result )
+        {
+            $( "#newOrders" ).append( result.totalOrders );
+        } );
+    } );
+
+    function stripeResponseHandler( status, response )
+    {
+        var $form = $( '#form' );
+        console.log( response );
+        if ( response.error )
+        {
+            $( "#bank-errors" ).attr( 'class', 'alert-box alert radius' );
+            $( "#bank-errors" ).text( response.error.message );
+        }
+        else
+        {
+            var xhttp = new XMLHttpRequest();
+            // Why we are switching address 1 and address 2? Stupid USPS expects that! they want the address 1 to be the Apt no etc and address 2 to be Street name. :(
+            var url = "https://secure.shippingapis.com/ShippingAPI.dll?API=Verify&&XML=<AddressValidateRequest USERID='897AUDIO1190'> <Address ID='0'><FirmName /><Address1>" + $(
+                            "#address2" ).val() + "</Address1><Address2>" + $( "#address1" ).val() +
+                    "</Address2><City>" + $( "#city" ).val() + "</City><State>" + $( "#state" )
+                            .val() + "</State><Zip5>" + $( "#zipcode" )
+                            .val() + "</Zip5><Zip4></Zip4></Address></AddressValidateRequest>";
+            xhttp.open( "GET", url, true );
+            xhttp.send();
+            xhttp.onreadystatechange = function ()
+            {
+                if ( xhttp.readyState==4 && xhttp.status==200 )
+                {
+                    console.log( xhttp.responseXML );
+                    if ( xhttp.responseXML.getElementsByTagName( "Error" ).length > 0 )
+                    {
+                        $( "#bank-errors" ).attr( 'class', 'alert-box alert radius' );
+                        $( "#bank-errors" ).text( "Billing Address : " + xhttp.responseXML.getElementsByTagName(
+                                        "Error" )[ 0 ].childNodes[ 2 ].childNodes[ 0 ].nodeValue );
+                    }
+                    else
+                    {
+                        var zipCode4 = xhttp.responseXML.getElementsByTagName( "Zip4" )[ 0 ].childNodes[ 0 ].nodeValue;
+                        var zipCode5 = xhttp.responseXML.getElementsByTagName( "Zip5" )[ 0 ].childNodes[ 0 ].nodeValue;
+                        var address2 = xhttp.responseXML.getElementsByTagName(
+                                "Address2" )[ 0 ].childNodes[ 0 ].nodeValue;
+                        var address1;
+                        if ( xhttp.responseXML.getElementsByTagName( "Address1" ).length > 0 )
+                        {
+                            address1 = xhttp.responseXML.getElementsByTagName(
+                                    "Address1" )[ 0 ].childNodes[ 0 ].nodeValue;
+                        }
+                        var city = xhttp.responseXML.getElementsByTagName( "City" )[ 0 ].childNodes[ 0 ].nodeValue;
+                        var state = xhttp.responseXML.getElementsByTagName( "State" )[ 0 ].childNodes[ 0 ].nodeValue;
+                        if ( zipCode4!==null && zipCode5 + "-" + zipCode4!==$( "#zipcode" ).val() )
+                        {
+                            repaintAddress( zipCode5, zipCode4, address1, address2, city, state );
+                        }
+                        else if ( $( "#address1" ).val()!==address2 )
+                        {
+                            repaintAddress( zipCode5, zipCode4, address1, address2, city, state );
+                        }
+                        else if ( address1!=='undefined' && $( "#address2" ).val()!==address1 && $( "#address2" )
+                                        .val()!=="" )
+                        {
+                            repaintAddress( zipCode5, zipCode4, address1, address2, city, state );
+                        }
+                        else if ( $( "#state" ).val()!==state )
+                        {
+                            repaintAddress( zipCode5, zipCode4, address1, address2, city, state );
+                        }
+                        else if ( $( "#city" ).val()!==city )
+                        {
+                            repaintAddress( zipCode5, zipCode4, address1, address2, city, state );
+                        }
+                        else
+                        {
+                            if ( !$( "#shippingAddressActivator" ).prop( "checked" ) )
+                            {
+                                var token = response.id;
+                                $form.append( $( '<input type="hidden" name="stripeToken" />' ).val( token ) );
+                                $form.get( 0 ).submit();
+                            }
+                        }
+                        if ( $( "#shippingAddressActivator" ).prop( "checked" ) )
+                        {
+                            var shipXhttp = new XMLHttpRequest();
+                            // Why we are switching address 1 and address 2? Stupid USPS expects that! they want the address 1 to be the Apt no etc and address 2 to be Street name. :(
+                            var shipUrl = "https://secure.shippingapis.com/ShippingAPI.dll?API=Verify&&XML=<AddressValidateRequest USERID='897AUDIO1190'> <Address ID='0'><FirmName /><Address1>" + $(
+                                            "#shipaddress2" ).val() + "</Address1><Address2>" + $(
+                                            "#shipaddress1" ).val() + "</Address2><City>" + $( "#shipcity" )
+                                            .val() + "</City><State>" + $( "#shipstate" ).val() + "</State><Zip5>" + $(
+                                            "#shipzipcode" )
+                                            .val() + "</Zip5><Zip4></Zip4></Address></AddressValidateRequest>";
+                            shipXhttp.open( "GET", shipUrl, true );
+                            shipXhttp.send();
+                            shipXhttp.onreadystatechange = function ()
+                            {
+                                if ( shipXhttp.readyState==4 && shipXhttp.status==200 )
+                                {
+                                    console.log( shipXhttp.responseXML );
+                                    if ( shipXhttp.responseXML.getElementsByTagName( "Error" ).length > 0 )
+                                    {
+                                        $( "#bank-errors" ).attr( 'class', 'alert-box alert radius' );
+                                        $( "#bank-errors" )
+                                                .text( "Shipping Address : " + shipXhttp.responseXML.getElementsByTagName(
+                                                                "Error" )[ 0 ].childNodes[ 2 ].childNodes[ 0 ].nodeValue );
+                                    }
+                                    else
+                                    {
+                                        var shipZipCode4 = shipXhttp.responseXML.getElementsByTagName(
+                                                "Zip4" )[ 0 ].childNodes[ 0 ].nodeValue;
+                                        var shipZipCode5 = shipXhttp.responseXML.getElementsByTagName(
+                                                "Zip5" )[ 0 ].childNodes[ 0 ].nodeValue;
+                                        var shipAddress2 = shipXhttp.responseXML.getElementsByTagName(
+                                                "Address2" )[ 0 ].childNodes[ 0 ].nodeValue;
+                                        var shipAddress1;
+                                        if ( shipXhttp.responseXML.getElementsByTagName( "Address1" ).length > 0 )
+                                        {
+                                            shipAddress1 = shipXhttp.responseXML.getElementsByTagName(
+                                                    "Address1" )[ 0 ].childNodes[ 0 ].nodeValue;
+                                        }
+                                        var shipCity = shipXhttp.responseXML.getElementsByTagName(
+                                                "City" )[ 0 ].childNodes[ 0 ].nodeValue;
+                                        var shipState = shipXhttp.responseXML.getElementsByTagName(
+                                                "State" )[ 0 ].childNodes[ 0 ].nodeValue;
+                                        if ( shipZipCode4!==null && shipZipCode5 + "-" + shipZipCode4!==$(
+                                                        "#shipzipcode" ).val() )
+                                        {
+                                            repaintShipAddress( shipZipCode5, shipZipCode4, shipAddress1, shipAddress2,
+                                                    shipCity, shipState );
+                                        }
+                                        else if ( $( "#shipaddress1" ).val()!==shipAddress2 )
+                                        {
+                                            repaintShipAddress( shipZipCode5, shipZipCode4, shipAddress1, shipAddress2,
+                                                    shipCity, shipState );
+                                        }
+                                        else if ( $( "#shipaddress2" )
+                                                        .val()!==shipAddress1 && shipAddress1!=='undefined' && $(
+                                                        "#shipaddress2" ).val()!=="" )
+                                        {
+                                            repaintShipAddress( shipZipCode5, shipZipCode4, shipAddress1, shipAddress2,
+                                                    shipCity, shipState );
+                                        }
+                                        else if ( $( "#shipstate" ).val()!==shipState )
+                                        {
+                                            repaintShipAddress( shipZipCode5, shipZipCode4, shipAddress1, shipAddress2,
+                                                    shipCity, shipState );
+                                        }
+                                        else if ( $( "#shipcity" ).val()!==shipCity )
+                                        {
+                                            repaintShipAddress( shipZipCode5, shipZipCode4, shipAddress1, shipAddress2,
+                                                    shipCity, shipState );
+                                        }
+                                        else
+                                        {
+                                            var shipToken = response.id;
+                                            $form.append( $( '<input type="hidden" name="stripeToken" />' )
+                                                    .val( shipToken ) );
+                                            $form.get( 0 ).submit();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function repaintAddress( zipCode5, zipCode4, address1, address2, city, state )
+    {
+        $( 'input[name=address1]' ).val( address2 );
+        if ( address1!=='undefined' )
+        {
+            $( 'input[name=address2]' ).val( address1 );
+        }
+        else
+        {
+            $( 'input[name=address2]' ).val( '' );
+        }
+        $( 'input[name=city]' ).val( city );
+        $( 'input[name=state]' ).val( state );
+        if ( zipCode4!==null && zipCode4!=='undefined' && zipCode4!=="" )
+        {
+            $( 'input[name=zipcode]' ).val( zipCode5 + "-" + zipCode4 );
+        }
+        else
+        {
+            $( 'input[name=zipcode]' ).val( zipCode5 );
+        }
+    }
+
+    function repaintShipAddress( shipZipCode5, shipZipCode4, shipAddress1, shipAddress2, shipCity, shipState )
+    {
+        $( 'input[name=shipaddress1]' ).val( shipAddress2 );
+        if ( shipAddress1!=='undefined' )
+        {
+            $( 'input[name=shipaddress2]' ).val( shipAddress1 );
+        }
+        else
+        {
+            $( 'input[name=shipaddress2]' ).val( '' );
+        }
+        $( 'input[name=shipcity]' ).val( shipCity );
+        $( 'input[name=shipstate]' ).val( shipState );
+        if ( shipZipCode4!==null && shipZipCode4!=='undefined' && shipZipCode4!=="" )
+        {
+            $( 'input[name=shipzipcode]' ).val( shipZipCode5 + "-" + shipZipCode4 );
+        }
+        else
+        {
+            $( 'input[name=shipzipcode]' ).val( shipZipCode5 );
+        }
+    }
+
+    function drawTable( data )
+    {
+        for ( var i = 0; i < data.length; i++ )
+        {
+            drawRow( data[ i ] );
+        }
+    }
+
+    function drawRow( rowData )
+    {
+        $( "#order" ).append(
+                "<div class='container' style='max-width:60%'><div class='col s4 center-align'><div class='card'><div class='card-image'>" + "<br><img class='avtivator' src=https://storage.googleapis.com/audiotroupe/" + rowData.imageName +
+                "><div class='card-content'><p>" + rowData.model + "-" + rowData.make + "</p><br><p>" + rowData.msrp + "</p></div></div></div></div>" );
+    }
+    $( document ).ready( function ()
+    {
+        $( "#shippingAddressActivator" ).click( function ()
+        {
+            if ( $( "#shippingAddressActivator" ).prop( "checked" ) )
+            {
+                $( "#shippingAddress" ).slideToggle( 400 );
+                $( '#shipaddress1' ).prop( 'required', true );
+                $( '#shipcity' ).prop( 'required', true );
+                $( '#shipzipcode' ).prop( 'required', true );
+                $( '#shipcity' ).prop( 'required', true );
+            }
+            else
+            {
+                $( "#shippingAddress" ).slideToggle( 400 );
+                $( '#shipaddress1' ).prop( 'required', false );
+                $( '#shipaddress2' ).prop( 'required', false );
+                $( '#shipcity' ).prop( 'required', false );
+                $( '#shipzipcode' ).prop( 'required', false );
+                $( '#shipcity' ).prop( 'required', false );
+            }
+        } );
+
+        $( "#form" ).on( 'submit', function ( e )
+        {
+            Stripe.createToken( {
+                number: $( "#cardnumber" ).val(),
+                cvc: $( "#cvc" ).val(),
+                exp_month: $( "#expirymonth" ).val(),
+                exp_year: $( "#expiryyear" ).val(),
+                name: $( "#name" ).val(),
+                address_line1: $( "#address1" ).val(),
+                address_line2: $( "#address2" ).val(),
+                address_zip: $( "#zipcode" ).val(),
+                address_city: $( "#city" ).val(),
+                address_state: $( "#state" ).val(),
+                address_country: "US"
+            }, stripeResponseHandler );
+            return false;
+        } );
+    } );
+</script>
+
+<body>
+<!-- Google Tag Manager -->
+<noscript>
+    <iframe src="//www.googletagmanager.com/ns.html?id=GTM-T9W4KW" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+</noscript>
+<script>
+    (function ( w, d, s, l, i )
+    {
+        w[ l ] = w[ l ] || [];
+        w[ l ].push( {
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        } );
+        var f = d.getElementsByTagName( s )[ 0 ],
+                j = d.createElement( s ),
+                dl = l!='dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+                '//www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore( j, f );
+    })( window, document, 'script', 'dataLayer', 'GTM-T9W4KW' );
+</script>
+<!-- End Google Tag Manager -->
+<header>
+    <nav class="top-nav blue darken-2" role="navigation">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a class="brand-logo center">Checkout</a>
+                <div>
+                    <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only"><i
+                                class="material-icons">menu</i></a></div>
+            </div>
+        </div>
+        </div>
+    </nav>
+    <% include partials/sidebar %>
+</header>
+<main>
+    <div class="container">
+        <div class="row" id="order">
+        </div>
+        <div class="row center-align">
+            <img style="margin:10px; max-width:60px;" src="public/images/credit-secure-big.png"></img>
+            <img style="margin:10px; max-width:180px;" src="public/images/pci-logo.png"></img>
+            <br>
+            <h5>Please enter your billing details</h5>
+            <br>
+            <small>You won't get charged until you buy our awesome headphones :)</small>
+            <br>
+            <br>
+        </div>
+        <div id="models" style="display:none;">
+            <%= model_list %>
+        </div>
+
+        <% if (error!=="") { %>
+        <div class="alert-box alert radius">
+            <%= error %>
+        </div>
+        <% } %>
+        <div class="container">
+          <div class="card-panel">
+            <form id="form" method="POST" action="/submitOrder" data-abide class="checkout-form"
+                  style="margin-left:25%; margin-right:25%;">
+                <div data-alert id="bank-errors"></div>
+                <label>Card Number: </label>
+                <input type="text" id="cardnumber" class="inputStyle" required placeholder="4444 4444 4444 4444"
+                       style="width:100%;">
+                <div class="row">
+                    <div class="col s4">
+                        <label style="display:block;">CVV:</label>
+                        <input type="text" id="cvc" class="inputStyle" required placeholder="111 (Amex: 1111)"
+                               style="width:100%; display:block; text-align:center;">
+                    </div>
+                    <div class="col s4">
+                        <label style="display:block;">Exp. Month:</label>
+                        <input type="text" id="expirymonth" class="inputStyle" pattern="^(0[1-9]|1[0-2])" required
+                               placeholder="MM" style="width:100%; display:block; text-align:center;">
+                    </div>
+                    <div class="col s4">
+                        <label style="display:block;">Exp. Year:</label>
+                        <input type="text" id="expiryyear" class="inputStyle" pattern="^(20)\d{2}$" required
+                               placeholder="YYYY" style="width:100%; display:block; text-align:center;">
+                    </div>
+                </div>
+                <label>Full Name on Credit Card
+                    <input type="text" required id="name" name="name" placeholder="John Smith"></input>
+                </label>
+                <label>Address 1
+                    <input type="text" id="address1" required name="address1" placeholder="123 Main St."></input>
+                </label>
+                <label>Address 2
+                    <input type="text" id="address2" name="address2" placeholder="APT 202"></input>
+                </label>
+
+                <div style="width:100%; display:block;">
+                    <div style="width:69%; display:inline-table;">
+                        <label>City
+                            <input type="text" id="city" required name="city" placeholder="San Francisco"></input>
+                        </label>
+                    </div>
+                    <div style="width:29%; display:inline-table;">
+                        <label>State
+                            <input type="text" id="state" name="state" required placeholder="CA"></input>
+                        </label>
+                    </div>
+                </div>
+                <label>Zip Code
+                    <input type="text" id="zipcode" name="zipcode" required placeholder="94107"
+                           pattern="\d{5}-?(\d{4})?"></input>
+                </label>
+                <br>
+                <br>
+                <input type="checkbox" class="shippingAddressActivator" name="shippingAddressActivator"
+                       id="shippingAddressActivator"><label for="shippingAddressActivator">Shipping Address is different
+                    from Billing address</label></input>
+                <br>
+                <br>
+                <div id="shippingAddress" style="display:none">
+                    <label>Shipping Address 1
+                        <input type="text" id="shipaddress1" name="shipaddress1" placeholder="123 Main St. APT 202"></input>
+                    </label>
+                    <label>Shipping Address 2
+                        <input type="text" name="shipaddress2" id="shipaddress2" placeholder="APT 202"></input>
+                    </label>
+
+                    <div style="width:100%; display:block;">
+                        <div style="width:69%; display:inline-table;">
+                            <label>City
+                                <input type="text" name="shipcity" id="shipcity" placeholder="San Francisco"></input>
+                            </label>
+                        </div>
+                        <div style="width:29%; display:inline-table;">
+                            <label>State
+                                <input type="text" name="shipstate" id="shipstate" placeholder="CA"></input>
+                            </label>
+                        </div>
+                    </div>
+                    <label>Zip Code
+                        <input type="text" name="shipzipcode" id="shipzipcode" placeholder="94107"
+                               pattern="\d{5}-?(\d{4})?"></input>
+                    </label>
+                </div>
+                <div class="center-align">
+                    <button value="submit" class="waves-effect waves-light btn blue" type="submit">Submit</button>
+                    <br>
+                    <br>
+                    <img style="max-width:120px;" src="public/images/solid@2x.png"></img>
+            </form>
+          </div>
+        </div>
+    </div>
+</main>
+<div id="recommendations"></div>
+</body>
+
+</html>

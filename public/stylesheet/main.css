@@ -1,0 +1,297 @@
+body {
+    background-color: #eff6fb
+}
+
+.drawerContent {
+    background-color: #fcfcfc;
+    height: 100%
+}
+
+.paper-toolbar {
+    margin-right: 60px;
+}
+
+.mainContent {
+    background-color: #eff6fb;
+    font-size: 20px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 20px;
+    background-position: 50% 50%;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    color: #666666;
+    text-align: center;
+    padding-top: 30px;
+    height: 100%;
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.thumbnail {
+    margin: 1px;
+    display: inline-block;
+    background-position: center center;
+    background-size: cover;
+}
+
+.customer-thumbnail {
+    margin: 5px;
+    display: inline-block;
+    background-position: center center;
+    background-size: cover;
+    max-width: 200px;
+    max-height: 200px;
+}
+
+.paper-material {
+    padding-bottom: 20px;
+}
+
+.adminProfileImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    /*don't forget prefixes*/
+    background-image: url("/public/image/profile.png");
+    background-position: center center;
+    /* as mentioned by Vad: */
+    background-size: cover;
+    margin: 10%;
+    margin-left: 30%;
+}
+
+.userProfileImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    /*don't forget prefixes*/
+    background-image: url("/public/images/profile.png");
+    background-position: center center;
+    /* as mentioned by Vad: */
+    background-size: cover;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.list-group-item:first-child {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.list-group-item:last-child {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.list-group-item {
+    width: 100%;
+    text-align: left;
+    color: #212121;
+    font-size: 15px;
+}
+
+.list-group-item:hover {
+    width: 100%;
+    text-align: left;
+    color: #212121;
+    background-color: #BBDEFB;
+}
+
+.list-group-item:active {
+    width: 100%;
+    text-align: left;
+    color: #212121;
+    background-color: #2196F3;
+}
+
+.list-group-item:visited {
+    width: 100%;
+    text-align: left;
+    color: #212121;
+    background-color: #BBDEFB;
+}
+
+.logOut {
+    position: fixed;
+    bottom: 50px;
+    margin: 0 auto;
+}
+
+.divider {
+    margin: auto;
+    width: 80%
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    color: #B6B6B6;
+    background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
+
+.form {
+    padding-top: 10px;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.paper-input {
+    text-align: center;
+    padding-left: 10%;
+    padding-right: 10%;
+    padding-bottom: 2%;
+    background-color: #fafafa;
+}
+
+.profileInfo {
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.basicTile {
+    text-align: left;
+    color: black;
+    font-size: 20px;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-bottom: 2%;
+    background-color: #fafafa;
+}
+
+.paper-radio-button {
+    font-size: 13px;
+}
+
+.paper-checkbox {
+    font-size: 15px;
+    color: #f7f7f7;
+}
+
+p {
+    font-size: 17px;
+}
+
+.myPanel {
+    margin: 3%;
+    border: 1px solid #687D6D;
+    border-radius: 4px 4px 0px 0px;
+}
+
+.myPanel .header {
+    background: #FFCCBC;
+    padding: 10px 20px;
+    color: white;
+    font-size: 20px;
+    text-shadow: grey .1em .1em .2em;
+    text-align: center;
+}
+
+.myPanel .form-group {
+    padding: 10px;
+}
+
+.selection {
+    -webkit-border-radius: 3;
+    -moz-border-radius: 3;
+    border-radius: 3px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 18px;
+    background: #3498db;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    transition: background-color 300ms ease-out;
+}
+
+.selection:hover {
+    background-color: #1976D2;
+}
+
+input[type=submit] {
+    -webkit-border-radius: 3;
+    -moz-border-radius: 3;
+    border-radius: 3px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 18px;
+    background: #3498db;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    transition: background-color 300ms ease-out;
+}
+
+input[type=submit]:hover {
+    background-color: #1976D2;
+}
+
+.button {
+    text-align: left;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    background-color: #fff;
+    color: #212121;
+}
+
+.button:hover {
+    width: 100%;
+    text-align: left;
+    color: #212121;
+    background-color: #BBDEFB;
+}
+
+.button:active {
+    width: 100%;
+    text-align: left;
+    color: #212121;
+    background-color: #2196F3;
+}
+
+.subheader {
+    font-size: 13px;
+}
+
+.table-row {
+    display: table;
+    width: 100%;
+}
+
+.table-column {
+    display: table-cell;
+    padding: 1%;
+}
+
+.input-field input[type=password]:focus {
+    border-bottom: 1px solid #64b5f6;
+    box-shadow: 0 1px 0 0 #64b5f6;
+}
+
+.input-field input[type=email]:focus {
+    border-bottom: 1px solid #64b5f6;
+    box-shadow: 0 1px 0 0 #64b5f6;
+}
+/* label focus color */
+.input-field input[type=password]:focus + label {
+    color: #64b5f6;
+}
+.input-field input[type=email]:focus + label {
+    color: #64b5f6;
+}
+
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid #64b5f6;
+    box-shadow: 0 1px 0 0 #64b5f6;
+}
+/*@media only screen and (max-width: 992px)
+header, main {
+    padding-left: 0;
+}*/
+
+/* label focus color */
+.input-field input[type=text]:focus + label {
+    color: #64b5f6;
+}
+/*header, main {
+  padding-left: 240px;
+}*/

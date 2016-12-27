@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Sign In | Audio Troupe</title>
+    <% include partials/head %>
+    <script src="//connect.facebook.net/en_US/all.js"></script>
+    <script type="text/javascript">
+        (function ( i, s, o, g, r, a, m )
+        {
+            i[ 'GoogleAnalyticsObject' ] = r;
+            i[ r ] = i[ r ] || function ()
+                    {
+                        (i[ r ].q = i[ r ].q || []).push( arguments )
+                    }, i[ r ].l = 1 * new Date();
+            a = s.createElement( o ),
+                    m = s.getElementsByTagName( o )[ 0 ];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore( a, m )
+        })( window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga' );
+
+        ga( 'create', 'UA-63070565-1', 'auto' );
+        ga( 'send', 'pageview' );
+
+
+        function submitForm()
+        {
+
+            var email = document.getElementsByClassName( "email" )[ 0 ].value;
+            var password = document.getElementsByClassName( "password" )[ 0 ].value;
+
+            var form = document.createElement( "form" );
+            form.method = "post";
+            form.action = "/signInUser";
+
+            var emailField = document.createElement( "input" );
+            emailField.setAttribute( "type", "hidden" );
+            emailField.setAttribute( "name", "email" );
+            emailField.setAttribute( "value", email );
+
+
+            var passwordField = document.createElement( "input" );
+            passwordField.setAttribute( "type", "hidden" );
+            passwordField.setAttribute( "name", "password" );
+            passwordField.setAttribute( "value", password );
+
+            form.appendChild( emailField );
+            form.appendChild( passwordField );
+
+            document.body.appendChild( form );
+            form.submit();
+            document.body.removeChild( form );
+        }
+    </script>
+</head>
+
+<body class="fullbleed">
+<!-- Google Tag Manager -->
+<noscript>
+    <iframe src="//www.googletagmanager.com/ns.html?id=GTM-T9W4KW" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+</noscript>
+<script>
+    (function ( w, d, s, l, i )
+    {
+        w[ l ] = w[ l ] || [];
+        w[ l ].push( {
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        } );
+        var f = d.getElementsByTagName( s )[ 0 ],
+                j = d.createElement( s ),
+                dl = l!='dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+                '//www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore( j, f );
+    })( window, document, 'script', 'dataLayer', 'GTM-T9W4KW' );
+</script>
+<!-- End Google Tag Manager -->
+<paper-header-panel mode="standard" class="flex">
+    <div class="mainContent">
+        <div id="fb-root"></div>
+        <script>
+            window.fbAsyncInit = function ()
+            {
+                FB.init( {
+                    appId: '175107975740', // App ID
+                    status: true, // check login status
+                } );
+
+                FB.getLoginStatus( function ( response )
+                {
+                    if ( response.status==='connected' )
+                    {
+                        console.log( response );
+                    }
+                    else if ( response.status==='not_authorized' )
+                    {
+                        console.log( 'not connected to app' );
+                    }
+                    else
+                    {
+                        console.log( 'not logged in to fb' );
+                    }
+                } );
+
+            };
+        </script>
+
+        <iron-image src="https://storage.googleapis.com/audiotroupe/AT-Logo.png"></iron-image>
+
+        <h1 span style="padding-bottom:10px">Welcome Back!</h1>
+        <p>Sign in using
+            <a href="/auth/facebook" class="waves-effect waves-light btn-large blue darken-2">
+                <span class="fa fa-facebook"></span> Facebook</a>
+        </p>
+        <div class="divider" style="width:200px">
+            <hr>
+        </div>
+        or
+        <form method="POST" action="/signInUser" class="col s12">
+            <div class="form">
+                <% if (message.length > 0) { %>
+                <div data-alert class="alert-box info round" style="background-color:#f04124; font-size:16px">
+                    <%= message %>
+                </div>
+                <% } %>
+
+                <div class="card-panel grey lighten-5" style="margin-left: 15%; margin-right: 15%;">
+                    <div class="basicTile">
+                        <br>
+                        <div class="row">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="email" name="email" type="text" class="validate" required="required">
+                                    <label for="email">Email</label>
+                                </div>
+                                <div class="input-field col s12">
+                                    <input id="password" name="password" type="password" class="validate"
+                                           required="required">
+                                    <label for="password">Password</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+            <button class="btn waves-effect waves-light blue" type="submit" name="action">Sign In
+                <i class="material-icons right">send</i>
+            </button>
+        </form>
+        <br>
+        <br>
+        <p style="font-size:15px"> Is this your first time here? (<a href="/signup">Create your account</a>) </p>
+    </div>
+</paper-header-panel>
+</body>
+
+</html>

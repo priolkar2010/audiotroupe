@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>My Orders | Audio Troupe</title>
+    <% include partials/head %>
+</head>
+<style>
+    #orderTable.table {
+        width: 70%;
+        margin-left: 15%;
+        margin-right: 0%;
+        margin-bottom: 0px;
+    }
+</style>
+<script>
+    (function ( i, s, o, g, r, a, m )
+    {
+        i[ 'GoogleAnalyticsObject' ] = r;
+        i[ r ] = i[ r ] || function ()
+                {
+                    (i[ r ].q = i[ r ].q || []).push( arguments )
+                }, i[ r ].l = 1 * new Date();
+        a = s.createElement( o ),
+                m = s.getElementsByTagName( o )[ 0 ];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore( a, m )
+    })( window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga' );
+
+    ga( 'create', 'UA-63070565-1', 'auto' );
+    ga( 'send', 'pageview' );
+
+    $( document ).ready( function ()
+    {
+        $.ajax( {
+            url: "getOrdersCount",
+            method: "GET"
+        } ).done( function ( result )
+        {
+            $( "#newOrders" ).append( result.totalOrders );
+        } );
+    } );
+
+    function submitForm( orderId )
+    {
+        $.ajax( {
+            url: "getOrderedModels",
+            method: "GET",
+            data: "orderId=" + orderId
+        } ).done( function ( result )
+        {
+            drawTable( result );
+        } );
+        $.ajax( {
+            url: "getOrderedData?orderId=" + orderId
+        } ).done( function ( result )
+        {
+            $( "#orderNumber" ).text( "Order Number: " + orderId );
+            $( "#shippingStatus" ).text( "Shipment Status: " + result.shippingStatus );
+            if ( result.trackingNumber!=='undefined' )
+            {
+                $( "#trackingNumber" ).text( "Tracking Info: " + result.trackingNumber );
+            }
+            else
+            {
+                $( "#trackingNumber" ).text( "Tracking Info is currently not availale" );
+            }
+        } );
+        $( "#moreInfo" ).slideToggle( 500 );
+    }
+
+    function drawTable( data )
+    {
+        for ( var i = 0; i < data.length; i++ )
+        {
+            drawRow( data[ i ] );
+        }
+    }
+
+    function drawRow( rowData )
+    {
+        $( "#order" ).append(
+                "<li class='thumbnail'>" + "<img src=https://storage.googleapis.com/audiotroupe/" + rowData.imageName +
+                "><div class='caption'><strong>" + rowData.model + "-" + rowData.make + "</strong><br>" + rowData.msrp + "</h6></div></li>" );
+    }
+</script>
+
+<body>
+<!-- Google Tag Manager -->
+<noscript>
+    <iframe src="//www.googletagmanager.com/ns.html?id=GTM-T9W4KW" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+</noscript>
+<script>
+    (function ( w, d, s, l, i )
+    {
+        w[ l ] = w[ l ] || [];
+        w[ l ].push( {
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        } );
+        var f = d.getElementsByTagName( s )[ 0 ],
+                j = d.createElement( s ),
+                dl = l!='dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+                '//www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore( j, f );
+    })( window, document, 'script', 'dataLayer', 'GTM-T9W4KW' );
+</script>
+<!-- End Google Tag Manager -->
+<header>
+    <nav class="top-nav blue darken-2">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a class="brand-logo center">My Orders</a>
+                <div>
+                    <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only"><i
+                                class="material-icons">menu</i></a></div>
+            </div>
+        </div>
+        </div>
+    </nav>
+    <% include partials/sidebar %>
+</header>
+<main>
+    <div class="container">
+        <br><br>
+        <div class="card-panel grey lighten-5">
+
+            <table id="orderTable">
+                <tr>
+                    <th> Order Number:</th>
+                    <th> Order Placed On:</th>
+                    <th> Headphones Purchased?</th>
+                    <th></th>
+                </tr>
+                <% for(i = 0; i < user.order.length; i++){
+                if(user.order[ i ].status==='shipped' || user.order[ i ].status==='to-be-shipped') {
+                %>
+                <tr>
+                    <td>
+                        <%= user.order[i].orderId %>
+                    </td>
+                    <td>
+                        <%= user.order[i].date %>
+                    </td>
+                    <td>TBD</td>
+                    <td>
+                        <button onclick=submitForm(
+                        '<%= user.order[i].orderId %>') class="waves-effect waves-light btn blue" type="button">More
+                        Info</button>
+                    </td>
+                </tr>
+                <%
+                }
+                } %>
+            </table>
+            <div id="moreInfo" class="moreInfo" style="display:none">
+                <div class="row">
+                    <div class="thumbnail">
+                        <h4 id=""></h4>
+                        <div id="orderNumber"></div>
+                        <p>Shipping Address:
+                            <%= shippingAddress.address1 %>,
+                            <%= shippingAddress.address2 %>,
+                            <%= shippingAddress.city %>,
+                            <%= shippingAddress.state %>,
+                            <%= shippingAddress.zipCode %>
+                            <br>
+                        <p id="shippingStatus"></p>
+                        <br>
+                        <p id="trackingNumber"></p>
+                        <h5>Headphones in Package</h5>
+                        <ul id="order" class="large-block-grid-3" style="margin:20px;">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+
+</html>

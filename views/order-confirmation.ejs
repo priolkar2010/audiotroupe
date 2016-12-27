@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Order Confirmation | Audio Troupe</title>
+    <% include partials/head %>
+</head>
+
+<script>
+    (function ( i, s, o, g, r, a, m )
+    {
+        i[ 'GoogleAnalyticsObject' ] = r;
+        i[ r ] = i[ r ] || function ()
+                {
+                    (i[ r ].q = i[ r ].q || []).push( arguments )
+                }, i[ r ].l = 1 * new Date();
+        a = s.createElement( o ),
+                m = s.getElementsByTagName( o )[ 0 ];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore( a, m )
+    })( window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga' );
+
+    ga( 'create', 'UA-63070565-1', 'auto' );
+    ga( 'send', 'pageview' );
+
+    $( document ).ready( function ()
+    {
+        $.ajax( {
+            url: "getOrdersCount",
+            method: "GET"
+        } ).done( function ( result )
+        {
+            $( "#newOrders" ).append( result.totalOrders );
+        } );
+
+        $.ajax( {
+            url: "sendEmailForNewOrder",
+            method: "GET"
+        } ).done( function ()
+        {
+        } );
+    } );
+</script>
+
+<body>
+<!-- Google Tag Manager -->
+<noscript>
+    <iframe src="//www.googletagmanager.com/ns.html?id=GTM-T9W4KW" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+</noscript>
+<script>
+    (function ( w, d, s, l, i )
+    {
+        w[ l ] = w[ l ] || [];
+        w[ l ].push( {
+            'gtm.start': new Date().getTime(),
+            event: 'gtm.js'
+        } );
+        var f = d.getElementsByTagName( s )[ 0 ],
+                j = d.createElement( s ),
+                dl = l!='dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+                '//www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore( j, f );
+    })( window, document, 'script', 'dataLayer', 'GTM-T9W4KW' );
+</script>
+<!-- End Google Tag Manager -->
+<header>
+    <nav class="top-nav blue darken-2">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a class="brand-logo center">Order Confirmation</a>
+                <div>
+                    <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only"><i
+                                class="material-icons">menu</i></a></div>
+            </div>
+        </div>
+        </div>
+    </nav>
+    <% include partials/sidebar %>
+</header>
+<main>
+    <div class="container" style="text-align:center;">
+      <div class="mainContent">
+          <div id="successBox" data-alert class="alert-box success radius">
+              Awesome! We'll get started on shipping your headphones!
+          </div>
+
+      </div>
+
+    </div>
+
+
+</main>
+</body>
+
+</html>
